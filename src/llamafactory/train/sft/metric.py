@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import numpy as np
 import torch
+import json
 from transformers.utils import is_jieba_available, is_nltk_available
 
 from ...extras.constants import IGNORE_INDEX
@@ -158,6 +159,13 @@ class ComputeRecallAndPrecise:
         pn = len(preds)
         rn = 0
         for pred, label in zip(decoded_preds, decoded_labels):
+            
+            try:
+                label = json.loads(label)['result']
+                pred = json.loads(pred)['result']
+            except BaseException as e:
+                print(f'预测结果格式不是json: {label}')
+                
             if label == '是':
                 rn += 1
                 if pred == '是':
