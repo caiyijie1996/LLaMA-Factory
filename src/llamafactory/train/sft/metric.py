@@ -17,7 +17,7 @@
 # limitations under the License.
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import numpy as np
 import torch
@@ -137,3 +137,37 @@ class ComputeSimilarity:
 
         if compute_result:
             return self._dump()
+
+
+class ComputeRecallAndPrecise:
+    
+    tokenizer: "PreTrainedTokenizer"
+    
+    def __call__(self, eval_preds: "EvalPrediction") -> Optional[Dict[str, float]]:
+        
+        preds, labels = numpify(eval_preds.predictions), numpify(eval_preds.label_ids)
+
+        preds = np.where(preds != IGNORE_INDEX, preds, self.tokenizer.pad_token_id)
+        labels = np.where(labels != IGNORE_INDEX, labels, self.tokenizer.pad_token_id)
+
+        decoded_preds = self.tokenizer.batch_decode(preds, skip_special_tokens=True)
+        decoded_labels = self.tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+        recall = 0
+        precise = 0
+        pn = len(preds)
+        rn = 0
+        for pred, label in zip(decoded_preds, decoded_labels):
+            if label == '是':
+                rn += 1
+                if pred == '是':
+                    recall += 1
+                    precise += 1
+            elif label == '否':
+                if pred == '否':
+                    precise += 1
+            else:
+                raise ValueError(f'标签不是是或否 {label}')
+        
+        return {"recall": recall / rn, "precise": precise / pn}
+
