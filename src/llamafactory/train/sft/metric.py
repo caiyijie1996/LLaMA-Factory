@@ -165,7 +165,7 @@ class ComputeRecallAndPrecise:
                 label = json.loads(label)['result']
                 pred = json.loads(pred)['result']
             except BaseException as e:
-                print(f'预测结果格式不是json: {label}')
+                print(f'预测结果格式不是json: {label} {pred}')
                 
             if label == '是':
                 rn += 1
