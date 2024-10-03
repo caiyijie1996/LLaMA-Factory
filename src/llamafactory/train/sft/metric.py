@@ -140,6 +140,7 @@ class ComputeSimilarity:
             return self._dump()
 
 
+@dataclass
 class ComputeRecallAndPrecise:
     
     tokenizer: "PreTrainedTokenizer"
