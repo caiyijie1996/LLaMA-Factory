@@ -72,9 +72,8 @@ def run_sft(
     elif finetuning_args.compute_accuracy:
         metric_module["compute_metrics"] = ComputeAccuracy()
         metric_module["preprocess_logits_for_metrics"] = eval_logit_processor
-    elif finetuning_args.recall_and_precise:
+    elif finetuning_args.recall_and_precise and training_args.predict_with_generate:
         metric_module["compute_metrics"] = ComputeRecallAndPrecise(tokenizer=tokenizer)
-        metric_module["preprocess_logits_for_metrics"] = eval_logit_processor
     
     # Initialize our Trainer
     trainer = CustomSeq2SeqTrainer(
