@@ -163,7 +163,7 @@ class ComputeRecallAndPrecise:
             
             try:
                 label = json.loads(label)['result']
-                pred = json.loads(pred)['result']
+                pred = pred.split('"result":')[-1].split('}')[0].strip('"')
             except BaseException as e:
                 print(f'预测结果格式不是json: {label} {pred}')
                 
